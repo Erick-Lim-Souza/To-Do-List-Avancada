@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List Avançada</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 To-Do List Avançada</h1>
+            <p>Organize suas tarefas com eficiência e produtividade</p>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="add-task-form">
+                    <h3 style="margin-bottom: 20px; color: #374151;">➕ Nova Tarefa</h3>
+                    <form id="taskForm">
+                        <div class="form-group">
+                            <label for="taskTitle">Título *</label>
+                            <input type="text" id="taskTitle" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="taskDescription">Descrição</label>
+                            <textarea id="taskDescription" placeholder="Descreva sua tarefa..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="taskCategory">Categoria</label>
+                            <select id="taskCategory">
+                                <option value="pessoal">🏠 Pessoal</option>
+                                <option value="trabalho">💼 Trabalho</option>
+                                <option value="estudos">📚 Estudos</option>
+                                <option value="saude">🏥 Saúde</option>
+                                <option value="compras">🛒 Compras</option>
+                                <option value="outros">📌 Outros</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="taskPriority">Prioridade</label>
+                            <select id="taskPriority">
+                                <option value="low">🟢 Baixa</option>
+                                <option value="medium">🟡 Média</option>
+                                <option value="high">🔴 Alta</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="taskDueDate">Data de Vencimento</label>
+                            <input type="date" id="taskDueDate">
+                        </div>
+                        
+                        <button type="submit" class="btn">Criar Tarefa</button>
+                    </form>
+                </div>
+
+                <div class="filters">
+                    <h3>🔍 Filtros</h3>
+                    
+                    <div class="filter-group">
+                        <label>Status:</label>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all" data-type="status">Todas</button>
+                            <button class="filter-btn" data-filter="pending" data-type="status">Pendentes</button>
+                            <button class="filter-btn" data-filter="completed" data-type="status">Concluídas</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Categoria:</label>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all" data-type="category">Todas</button>
+                            <button class="filter-btn" data-filter="pessoal" data-type="category">Pessoal</button>
+                            <button class="filter-btn" data-filter="trabalho" data-type="category">Trabalho</button>
+                            <button class="filter-btn" data-filter="estudos" data-type="category">Estudos</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Prioridade:</label>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all" data-type="priority">Todas</button>
+                            <button class="filter-btn" data-filter="high" data-type="priority">Alta</button>
+                            <button class="filter-btn" data-filter="medium" data-type="priority">Média</button>
+                            <button class="filter-btn" data-filter="low" data-type="priority">Baixa</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="backup-section">
+                    <h3 style="margin-bottom: 15px; color: #374151;">💾 Backup</h3>
+                    <div class="backup-buttons">
+                        <button class="btn-secondary" onclick="exportTasks()">📤 Exportar JSON</button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importTasks(event)">
+                        <button class="btn-secondary" onclick="document.getElementById('importFile').click()">📥 Importar JSON</button>
+                        <button class="btn-secondary" onclick="clearAllTasks()">🗑️ Limpar Tudo</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalTasks">0</div>
+                        <div class="stat-label">Total de Tarefas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="pendingTasks">0</div>
+                        <div class="stat-label">Pendentes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="completedTasks">0</div>
+                        <div class="stat-label">Concluídas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="completionRate">0%</div>
+                        <div class="stat-label">Taxa de Conclusão</div>
+                    </div>
+                </div>
+
+                <div class="tasks-header">
+                    <h2 style="color: #1f2937;">📝 Suas Tarefas</h2>
+                    <input type="text" class="search-box" id="searchBox" placeholder="🔍 Buscar tarefas...">
+                </div>
+
+                <div id="tasksList" class="tasks-list">
+                    <div class="empty-state">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">📝</div>
+                        <h3>Nenhuma tarefa encontrada</h3>
+                        <p>Comece criando sua primeira tarefa!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <footer class="footer">
+        <p> Todos os direitos reservados &copy; 2025 By. Greem Monster Project</p>
+        <p>Feito com ❤️ por <a href="https://github.com/GreemMonster">Greem Monster Project</a></p>
+    </footer>
+    
+    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+</body>
+</html>
